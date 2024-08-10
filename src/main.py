@@ -124,7 +124,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
     add_legend(ax)
 
     for spine in ax.spines.values():
-        spine.set_edgecolor(BACKGROUND_COLOR)
+        spine.setedgecolor(BACKGROUND_COLOR)
 
     plt.text(
         -0.025,
@@ -138,7 +138,8 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
         weight="bold",
     )
 
-    image_path = "rsi_heatmap.png"
+    # Guardar la imagen en la misma carpeta que el script
+    image_path = os.path.join(os.path.dirname(__file__), "rsi_heatmap.png")
     plt.savefig(image_path, bbox_inches="tight")
     plt.close(fig)
     return image_path
