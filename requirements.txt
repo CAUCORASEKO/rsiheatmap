@@ -4,3 +4,4 @@ pycoingecko==3.1.0
 tradingview_ta==3.3.0
 matplotlib==3.9.0
 pandas==2.2.2
+Flask==2.1.1
