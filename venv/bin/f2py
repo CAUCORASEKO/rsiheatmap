@@ -1,4 +1,4 @@
-#!/Users/mestizo/rsiheatmap1/rsiheatmap/venv/bin/python3.11
+#!/Users/mestizo/Desktop/rsiheatmap/rsiheatmap/venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

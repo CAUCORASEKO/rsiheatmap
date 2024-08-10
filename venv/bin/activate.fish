@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/mestizo/rsiheatmap1/rsiheatmap/venv"
+set -gx VIRTUAL_ENV "/Users/mestizo/Desktop/rsiheatmap/rsiheatmap/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/mestizo/rsiheatmap1/rsiheatmap/venv"
+VIRTUAL_ENV="/Users/mestizo/Desktop/rsiheatmap/rsiheatmap/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
