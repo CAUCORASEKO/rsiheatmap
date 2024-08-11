@@ -1,15 +1,14 @@
-from flask import Flask, send_file
-from flask_cors import CORS
-import os
 import matplotlib.pyplot as plt
 import numpy as np
+from flask import Flask, send_file
+import os
+
 from data import get_closest_to_24h, get_RSI, get_top_vol_coins
 
 app = Flask(__name__)
-CORS(app)
 
 FIGURE_SIZE = (12, 10)
-BACKGROUND_COLOR = "#0d1117" 
+BACKGROUND_COLOR = "#0d1117"
 RANGES = {
     "Overbought": (70, 100),
     "Strong": (60, 70),
