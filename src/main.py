@@ -1,6 +1,3 @@
-import matplotlib
-matplotlib.use('Agg')
-
 import matplotlib.pyplot as plt
 import numpy as np
 from flask import Flask, send_file
@@ -127,7 +124,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
     add_legend(ax)
 
     for spine in ax.spines.values():
-        spine.set_edgecolor(BACKGROUND_COLOR)
+        spine.set_edgecolor(BACKGROUND_COLOR)  # Cambiado a set_edgecolor
 
     plt.text(
         -0.025,
@@ -141,7 +138,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
         weight="bold",
     )
 
-    image_path = "rsi_heatmap.png"
+    image_path = os.path.join(os.path.dirname(__file__), "rsi_heatmap.png")
     plt.savefig(image_path, bbox_inches="tight")
     plt.close(fig)
     return image_path
@@ -187,3 +184,4 @@ def serve_rsi_heatmap():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
