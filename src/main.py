@@ -1,11 +1,13 @@
+from flask import Flask, send_file
+from flask_cors import CORS
 import matplotlib.pyplot as plt
 import numpy as np
-from flask import Flask, send_file
 import os
 
 from data import get_closest_to_24h, get_RSI, get_top_vol_coins
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "https://cauco.up.railway.app"}})
 
 FIGURE_SIZE = (12, 10)
 BACKGROUND_COLOR = "#0d1117"
@@ -124,7 +126,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
     add_legend(ax)
 
     for spine in ax.spines.values():
-        spine.set_edgecolor(BACKGROUND_COLOR)  # Cambiado a set_edgecolor
+        spine.set_edgecolor(BACKGROUND_COLOR)
 
     plt.text(
         -0.025,
@@ -138,7 +140,8 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
         weight="bold",
     )
 
-    image_path = os.path.join(os.path.dirname(__file__), "rsi_heatmap.png")
+    # Guardar el archivo en un directorio accesible, como /tmp/
+    image_path = "/tmp/rsi_heatmap.png"
     plt.savefig(image_path, bbox_inches="tight")
     plt.close(fig)
     return image_path
