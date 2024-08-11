@@ -2,10 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from flask import Flask, send_file
 import os
+from flask_cors import CORS  # Importa CORS para manejar las solicitudes de distintos orígenes
 
 from data import get_closest_to_24h, get_RSI, get_top_vol_coins
 
 app = Flask(__name__)
+CORS(app)  # Habilita CORS para tu aplicación Flask
 
 FIGURE_SIZE = (12, 10)
 BACKGROUND_COLOR = "#0d1117"
@@ -124,7 +126,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
     add_legend(ax)
 
     for spine in ax.spines.values():
-        spine.set_edgecolor(BACKGROUND_COLOR)  # Cambiado a set_edgecolor
+        spine.set_edgecolor(BACKGROUND_COLOR)
 
     plt.text(
         -0.025,
@@ -184,4 +186,3 @@ def serve_rsi_heatmap():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
-
