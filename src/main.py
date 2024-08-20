@@ -2,13 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from flask import Flask, send_file
 import os
-from flask_cors import CORS  # Importa CORS para manejar las solicitudes de distintos orígenes
+from flask_cors import CORS
 
 from data import get_closest_to_24h, get_RSI, get_top_vol_coins
 
 app = Flask(__name__)
-CORS(app)  # Habilita CORS para tu aplicación Flask
+# Configuración de CORS para permitir solicitudes desde cualquier origen
+CORS(app, resources={r"/*": {"origins": "*"}})
 
+# Configuración de constantes para el gráfico
 FIGURE_SIZE = (12, 10)
 BACKGROUND_COLOR = "#0d1117"
 RANGES = {
@@ -34,26 +36,32 @@ SCATTER_COLORS = {
 }
 
 def get_color_for_rsi(rsi_value: float) -> dict:
+    """Determina el color para un valor RSI dado."""
     for label, (low, high) in RANGES.items():
         if low <= rsi_value < high:
             return SCATTER_COLORS[label]
     return None
 
 def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
+    """Genera un heatmap de RSI para las principales criptomonedas por volumen."""
     top_vol = get_top_vol_coins(num_coins)
-    rsi_data = get_RSI(top_vol, time_frame=time_frame)
-    old_rsi_data = get_closest_to_24h(time_frame=time_frame)
+    
+    # Obtiene los datos de RSI y filtra los valores None
+    rsi_data = {k: v for k, v in get_RSI(top_vol, time_frame=time_frame).items() if v is not None}
+    old_rsi_data = {k: v for k, v in get_closest_to_24h(time_frame=time_frame).items() if v is not None}
 
     rsi_symbols = list(rsi_data.keys())
     rsi_values = list(rsi_data.values())
 
-    average_rsi = np.mean(rsi_values)
+    # Calcula el RSI promedio, manejando el caso de lista vacía
+    average_rsi = np.mean(rsi_values) if rsi_values else 0
 
     fig, ax = plt.subplots(figsize=FIGURE_SIZE)
 
     fig.patch.set_facecolor(BACKGROUND_COLOR)
     ax.set_facecolor(BACKGROUND_COLOR)
 
+    # Dibuja las áreas de fondo para cada rango de RSI
     color_map = []
     for k in RANGES:
         color_map.append((*RANGES[k], COLORS_LABELS[k], k))
@@ -78,6 +86,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
             color="grey",
         )
 
+    # Dibuja los puntos y etiquetas para cada símbolo
     for i, symbol in enumerate(rsi_symbols):
         ax.scatter(
             i + 1,
@@ -94,7 +103,8 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
             ha="center",
         )
 
-        if symbol in old_rsi_data:
+        # Dibuja líneas de cambio si hay datos antiguos disponibles
+        if symbol in old_rsi_data and old_rsi_data[symbol] is not None:
             rsi_diff = rsi_values[i] - old_rsi_data[symbol]
             line_color = "#1f9986" if rsi_diff > 0 else "#e23343"
             ax.plot(
@@ -105,6 +115,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
                 linewidth=0.75,
             )
 
+    # Dibuja la línea de RSI promedio
     ax.axhline(
         xmin=0, xmax=1, y=average_rsi, color="#d58c3c", linestyle="--", linewidth=0.75
     )
@@ -118,6 +129,7 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
         fontsize=15,
     )
 
+    # Configura los ejes y los límites del gráfico
     ax.tick_params(colors="#a9aaab", which="both", length=0)
     ax.set_ylim(20, 80)
     ax.set_xlim(0, len(rsi_symbols) + 2)
@@ -140,12 +152,14 @@ def plot_rsi_heatmap(num_coins: int = 100, time_frame: str = "1d") -> str:
         weight="bold",
     )
 
+    # Guarda la imagen y devuelve la ruta
     image_path = os.path.join(os.path.dirname(__file__), "rsi_heatmap.png")
     plt.savefig(image_path, bbox_inches="tight")
     plt.close(fig)
     return image_path
 
 def add_legend(ax: plt.Axes) -> None:
+    """Añade una leyenda al gráfico."""
     adjusted_colors = list(COLORS_LABELS.values())
     adjusted_colors[2] = "#808080"
     legend_handles = [
@@ -181,6 +195,7 @@ def add_legend(ax: plt.Axes) -> None:
 
 @app.route("/")
 def serve_rsi_heatmap():
+    """Ruta principal que genera y sirve el heatmap de RSI."""
     image_path = plot_rsi_heatmap(num_coins=100, time_frame="1d")
     return send_file(image_path, mimetype="image/png")
 
